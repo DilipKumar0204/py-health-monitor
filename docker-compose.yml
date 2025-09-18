@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  health-monitor:
+    build: .
+    volumes:
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro
+    environment:
+      - LOG_LEVEL=INFO
+      - CONFIG_FILE=config.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import health_monitor; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
