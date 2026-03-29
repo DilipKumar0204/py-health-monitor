@@ -1,0 +1,49 @@
+from azure.identity import DefaultAzureCredential
+from azure.monitor.query import MetricsQueryClient
+from datetime import timedelta
+
+from fastapi import FastAPI
+from azure_service import get_azure_metrics
+
+app = FastAPI()
+# Initialize Azure client
+credential = DefaultAzureCredential()
+client = MetricsQueryClient(credential)
+
+# Replace with your Azure Resource ID
+RESOURCE_ID = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Compute/virtualMachines/<vm-name>"
+
+def get_azure_metrics():
+    try:
+        response = client.query_resource(
+            RESOURCE_ID,
+            metric_names=["Percentage CPU", "Available Memory Bytes"],
+            timespan=timedelta(minutes=5),
+            granularity=timedelta(minutes=1),
+        )
+
+        metrics_data = {}
+
+        for metric in response.metrics:
+            for timeseries in metric.timeseries:
+                data_points = [
+                    point.average for point in timeseries.data if point.average is not None
+                ]
+                if data_points:
+                    metrics_data[metric.name] = data_points[-1]  # latest value
+
+        return {
+            "status": "success",
+            "metrics": metrics_data
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+@app.get("/api/metrics/azure")
+def azure_metrics():
+    return get_azure_metrics()
