@@ -10,3 +10,13 @@ This project demonstrates real-world DevOps skills by implementing a production-
 • Includes full test coverage with pytest
 • Supports containerized deployment with Docker
 • Offers CI/CD pipeline integration
+
+Libraries used:
+FastAPI	- API framework	fastapi==0.110.0
+psutil	- System metrics (CPU, memory, disk)	psutil==5.9.8
+requests	- Sync external API calls	requests==2.31.0
+httpx -	Async API calls	httpx==0.27.0
+azure-identity - Azure authentication	azure-identity==1.16.0
+azure-monitor-query -	Fetch Azure Monitor metrics & logs	azure-monitor-query==1.3.0
+datetime - Timestamp handling (built-in)	✅ Built-in (no install)
+uvicorn	- ASGI server to run FastAPI	uvicorn==0.29.0
